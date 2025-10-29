@@ -1,0 +1,20 @@
+/* Financeiro */
+.financeiro-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.despesas-container, .nova-despesa-container {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+    .financeiro-grid {
+        grid-template-columns: 1fr;
+    }
+}
