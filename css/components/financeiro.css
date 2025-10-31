@@ -18,3 +18,98 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Relatórios Financeiros */
+.filtros-relatorio {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto auto auto;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    align-items: end;
+}
+
+.tabelas-relatorio {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.tabela-receitas, .tabela-despesas {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.grafico-lucro {
+    grid-column: 1 / -1;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.chart-container {
+    height: 300px;
+    position: relative;
+}
+
+.indicadores-financeiros {
+    grid-column: 1 / -1;
+}
+
+.cards-grid-indicadores {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.resumo-mensal {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.resumo-mensal .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.info-periodo {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 4px solid #3498db;
+}
+
+.btn-primary {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #c0392b;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .filtros-relatorio {
+        grid-template-columns: 1fr;
+    }
+    
+    .tabelas-relatorio {
+        grid-template-columns: 1fr;
+    }
+    
+    .cards-grid-indicadores {
+        grid-template-columns: 1fr;
+    }
+}

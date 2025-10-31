@@ -32,6 +32,7 @@
                     <li><a href="#" class="nav-link" data-page="carros-entrada">Carros para Entrar</a></li>
                     <li><a href="#" class="nav-link" data-page="servicos-completos">Serviços Completos</a></li>
                     <li><a href="#" class="nav-link" data-page="financeiro">Financeiro</a></li>
+                    <li><a href="#" class="nav-link" data-page="relatorios-financeiros">Relatórios</a></li>
                 </ul>
             </nav>
         </div>
@@ -320,9 +321,124 @@
         </div>
     </div>
 
+   <!-- Relatórios Financeiros -->
+<section id="relatorios-financeiros" class="page">
+    <h2 class="page-title">Relatórios Financeiros Mensais</h2>
+    
+    <div class="filtros-relatorio">
+        <div class="form-group">
+            <label for="ano-relatorio">Ano:</label>
+            <select id="ano-relatorio" class="form-control">
+                <!-- Os anos serão preenchidos dinamicamente -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="mes-relatorio">Mês:</label>
+            <select id="mes-relatorio" class="form-control">
+                <option value="todos">Todos os meses</option>
+                <option value="1">Janeiro</option>
+                <option value="2">Fevereiro</option>
+                <option value="3">Março</option>
+                <option value="4">Abril</option>
+                <option value="5">Maio</option>
+                <option value="6">Junho</option>
+                <option value="7">Julho</option>
+                <option value="8">Agosto</option>
+                <option value="9">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="tipo-relatorio">Tipo de Relatório:</label>
+            <select id="tipo-relatorio" class="form-control">
+                <option value="completo">Relatório Completo</option>
+                <option value="resumido">Resumo Executivo</option>
+                <option value="comparativo">Comparativo Mensal</option>
+            </select>
+        </div>
+        <button class="btn btn-success" onclick="gerarRelatorio()">Gerar Relatório</button>
+        <button class="btn btn-primary" onclick="gerarRelatorioPDF()">Gerar PDF</button>
+        <button class="btn btn-warning" onclick="gerarRelatorioAnoAtual()">Ano Atual</button>
+    </div>
+
+    <div class="info-periodo">
+        <h4 id="periodo-selecionado">Período: Carregando...</h4>
+    </div>
+
+    <div class="resumo-mensal" id="resumo-mensal">
+        <!-- Resumo será preenchido dinamicamente -->
+    </div>
+
+    <div class="tabelas-relatorio">
+        <div class="tabela-receitas">
+            <h3>Receitas por Mês</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mês</th>
+                            <th>Serviços Realizados</th>
+                            <th>Total Receita (R$)</th>
+                            <th>Ticket Médio (R$)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-receitas">
+                        <!-- Será preenchido dinamicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tabela-despesas">
+            <h3>Despesas por Categoria</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Categoria</th>
+                            <th>Total (R$)</th>
+                            <th>% do Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-despesas">
+                        <!-- Será preenchido dinamicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="grafico-lucro">
+            <h3>Evolução do Lucro Mensal</h3>
+            <div class="chart-container">
+                <canvas id="graficoLucroMensal" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <div class="indicadores-financeiros">
+            <h3>Indicadores Financeiros</h3>
+            <div class="cards-grid-indicadores">
+                <div class="stat-card">
+                    <h3 id="indicador-margem">0%</h3>
+                    <p>Margem de Lucro</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="indicador-roi">0%</h3>
+                    <p>ROI Mensal</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="indicador-crescimento">0%</h3>
+                    <p>Crescimento vs Mês Anterior</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
     <footer>
         <div class="container">
-            <p>AutoChapas &copy; 2023 - Todos os direitos reservados</p>
+            <p>Alexandre Reparos Automotivos &copy; 2025 - Todos os direitos reservados</p>
         </div>
     </footer>
 
@@ -335,5 +451,7 @@
     <script src="js/financeiro.js"></script>
     <script src="js/pdf.js"></script>
     <script src="js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/relatorios.js"></script>
 </body>
 </html>

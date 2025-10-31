@@ -39,3 +39,8 @@ function atualizarTodasAsTabelas() {
     atualizarTabelaAtividades();
     atualizarTabelaDespesas();
 }
+
+if (document.getElementById('relatorios-financeiros').classList.contains('active')) {
+    inicializarRelatorios();
+}
+

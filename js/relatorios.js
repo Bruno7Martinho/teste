@@ -8,8 +8,8 @@ let relatorioData = {
 
 // Inicializar dados de exemplo para relatórios
 function inicializarDadosRelatorios() {
-    const anoAtual = new Date().getFullYear();
     const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const anoAtual = new Date().getFullYear();
     
     relatorioData.meses = meses.map((mes, index) => `${mes}/${anoAtual}`);
     
@@ -17,37 +17,12 @@ function inicializarDadosRelatorios() {
     relatorioData.receitas = meses.map(() => Math.floor(Math.random() * 20000) + 10000);
     relatorioData.despesas = meses.map(() => Math.floor(Math.random() * 10000) + 5000);
     relatorioData.lucros = relatorioData.receitas.map((receita, index) => receita - relatorioData.despesas[index]);
-    
-    // Popular anos no select
-    popularAnosSelect();
-}
-
-// Popular select de anos
-function popularAnosSelect() {
-    const anoSelect = document.getElementById('ano-relatorio');
-    const anoAtual = new Date().getFullYear();
-    
-    // Limpar opções existentes
-    anoSelect.innerHTML = '';
-    
-    // Adicionar anos (atual e 2 anos anteriores)
-    for (let i = 0; i < 3; i++) {
-        const ano = anoAtual - i;
-        const option = document.createElement('option');
-        option.value = ano;
-        option.textContent = ano;
-        if (i === 0) option.selected = true; // Selecionar ano atual
-        anoSelect.appendChild(option);
-    }
 }
 
 // Gerar relatório completo
 function gerarRelatorio() {
     const anoSelecionado = document.getElementById('ano-relatorio').value;
     const mesSelecionado = document.getElementById('mes-relatorio').value;
-    
-    // Atualizar informações do período
-    atualizarInfoPeriodo(anoSelecionado, mesSelecionado);
     
     // Filtrar dados baseado na seleção
     const dadosFiltrados = filtrarDadosRelatorio(anoSelecionado, mesSelecionado);
@@ -58,25 +33,6 @@ function gerarRelatorio() {
     atualizarTabelaDespesas(dadosFiltrados);
     atualizarGraficoLucro(dadosFiltrados);
     atualizarIndicadores(dadosFiltrados);
-}
-
-// Atualizar informações do período
-function atualizarInfoPeriodo(ano, mes) {
-    const periodoElement = document.getElementById('periodo-selecionado');
-    const periodoTexto = mes === 'todos' 
-        ? `Período: Ano ${ano} - Todos os meses`
-        : `Período: ${getNomeMes(mes)} de ${ano}`;
-    
-    periodoElement.textContent = periodoTexto;
-}
-
-// Obter nome do mês
-function getNomeMes(numeroMes) {
-    const meses = [
-        'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-    ];
-    return meses[parseInt(numeroMes) - 1] || '';
 }
 
 // Filtrar dados para o relatório
@@ -283,161 +239,40 @@ function atualizarIndicadores(dados) {
     });
 }
 
-// Gerar relatório do ano atual
-function gerarRelatorioAnoAtual() {
-    const anoAtual = new Date().getFullYear().toString();
-    document.getElementById('ano-relatorio').value = anoAtual;
-    document.getElementById('mes-relatorio').value = 'todos';
-    gerarRelatorio();
-}
-
-// Função para gerar relatório em PDF
-async function gerarRelatorioPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
+// Exportar para Excel
+function exportarParaExcel() {
     const anoSelecionado = document.getElementById('ano-relatorio').value;
     const mesSelecionado = document.getElementById('mes-relatorio').value;
     
+    // Criar dados para exportação
     const dados = filtrarDadosRelatorio(anoSelecionado, mesSelecionado);
     
-    // Configurações do PDF
-    doc.setFontSize(16);
-    doc.text('RELATÓRIO FINANCEIRO - ALEXANDRE REPAROS AUTOMOTIVOS', 105, 15, { align: 'center' });
-    
-    // Informações do período
-    doc.setFontSize(11);
-    const periodoTexto = mesSelecionado === 'todos' 
-        ? `Ano: ${anoSelecionado} - Todos os meses`
-        : `Período: ${getNomeMes(mesSelecionado)}/${anoSelecionado}`;
-    
-    doc.text(periodoTexto, 14, 25);
-    doc.text(`Data do Relatório: ${new Date().toLocaleDateString('pt-BR')}`, 14, 32);
-    
-    // Resumo Financeiro
-    const totalReceita = dados.receitas.reduce((sum, val) => sum + val, 0);
-    const totalDespesa = dados.despesas.reduce((sum, val) => sum + val, 0);
-    const totalLucro = totalReceita - totalDespesa;
-    const margemLucro = totalReceita > 0 ? ((totalLucro / totalReceita) * 100).toFixed(1) : 0;
-    
-    doc.setFontSize(12);
-    doc.text('RESUMO FINANCEIRO', 14, 45);
-    
-    doc.setFontSize(10);
-    doc.text(`Receita Total: R$ ${totalReceita.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, 14, 55);
-    doc.text(`Despesas Totais: R$ ${totalDespesa.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, 14, 62);
-    doc.text(`Lucro Líquido: R$ ${totalLucro.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, 14, 69);
-    doc.text(`Margem de Lucro: ${margemLucro}%`, 14, 76);
-    
-    // Tabela de Receitas
-    const startY = 90;
-    const receitasData = [];
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Mês,Serviços Realizados,Receita (R$),Despesas (R$),Lucro (R$)\n";
     
     dados.meses.forEach((mes, index) => {
-        const ticketMedio = dados.receitas[index] / 10;
-        receitasData.push([
+        const linha = [
             mes,
-            '10',
-            `R$ ${dados.receitas[index].toLocaleString('pt-BR', {minimumFractionDigits: 2})}`,
-            `R$ ${ticketMedio.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`
-        ]);
+            '10', // Serviços realizados
+            dados.receitas[index].toFixed(2),
+            dados.despesas[index].toFixed(2),
+            dados.lucros[index].toFixed(2)
+        ].join(',');
+        csvContent += linha + "\n";
     });
     
-    doc.autoTable({
-        startY: startY,
-        head: [['Mês', 'Serviços', 'Receita (R$)', 'Ticket Médio (R$)']],
-        body: receitasData,
-        styles: { fontSize: 8 },
-        headStyles: { fillColor: [52, 152, 219] },
-        theme: 'grid'
-    });
-    
-    // Tabela de Despesas por Categoria
-    const despesasY = doc.lastAutoTable.finalY + 10;
-    const categorias = {
-        'Materiais': dados.despesas.reduce((sum, val) => sum + val * 0.4, 0),
-        'Salários': dados.despesas.reduce((sum, val) => sum + val * 0.3, 0),
-        'Aluguel': dados.despesas.reduce((sum, val) => sum + val * 0.15, 0),
-        'Utilidades': dados.despesas.reduce((sum, val) => sum + val * 0.1, 0),
-        'Outros': dados.despesas.reduce((sum, val) => sum + val * 0.05, 0)
-    };
-    
-    const totalDespesas = Object.values(categorias).reduce((sum, val) => sum + val, 0);
-    const despesasData = [];
-    
-    Object.entries(categorias).forEach(([categoria, valor]) => {
-        const percentual = totalDespesas > 0 ? ((valor / totalDespesas) * 100).toFixed(1) : 0;
-        despesasData.push([
-            categoria,
-            `R$ ${valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`,
-            `${percentual}%`
-        ]);
-    });
-    
-    doc.autoTable({
-        startY: despesasY,
-        head: [['Categoria', 'Valor (R$)', '% do Total']],
-        body: despesasData,
-        styles: { fontSize: 8 },
-        headStyles: { fillColor: [231, 76, 60] },
-        theme: 'grid'
-    });
-    
-    // Indicadores Financeiros
-    const indicadoresY = doc.lastAutoTable.finalY + 10;
-    doc.setFontSize(12);
-    doc.text('INDICADORES FINANCEIROS', 14, indicadoresY);
-    
-    const roi = totalDespesa > 0 ? ((totalLucro / totalDespesa) * 100).toFixed(1) : 0;
-    
-    doc.setFontSize(10);
-    doc.text(`Margem de Lucro: ${margemLucro}%`, 14, indicadoresY + 8);
-    doc.text(`ROI: ${roi}%`, 14, indicadoresY + 15);
-    doc.text(`Crescimento: ${(Math.random() * 20 - 5).toFixed(1)}%`, 14, indicadoresY + 22);
-    
-    // Observações
-    const observacoesY = indicadoresY + 35;
-    doc.setFontSize(11);
-    doc.text('OBSERVAÇÕES:', 14, observacoesY);
-    
-    doc.setFontSize(9);
-    const observacoes = [
-        'Relatório gerado automaticamente pelo sistema Alexandre Reparos Automotivos',
-        'Valores sujeitos a conferência e ajustes',
-        'Para dúvidas, entre em contato com o administrador'
-    ];
-    
-    observacoes.forEach((obs, index) => {
-        doc.text(obs, 14, observacoesY + 8 + (index * 5));
-    });
-    
-    // Salvar PDF
-    const nomeArquivo = `relatorio_financeiro_${anoSelecionado}_${mesSelecionado}.pdf`;
-    doc.save(nomeArquivo);
+    // Criar link de download
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `relatorio_financeiro_${anoSelecionado}_${mesSelecionado}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 // Inicializar relatórios quando a página for carregada
 function inicializarRelatorios() {
     inicializarDadosRelatorios();
     gerarRelatorio(); // Gerar relatório inicial
-
-
-
-    // Função para atualizar relatórios quando dados mudarem
-function atualizarRelatoriosComDadosReais() {
-    if (document.getElementById('relatorios-financeiros').classList.contains('active')) {
-        const anoSelecionado = document.getElementById('ano-relatorio').value;
-        const mesSelecionado = document.getElementById('mes-relatorio').value;
-        
-        // Recarregar dados
-        inicializarDadosRelatorios();
-        
-        // Regenerar relatório
-        gerarRelatorio();
-    }
-}
-
-// Chamar esta função sempre que adicionar/editar despesas ou serviços
-// Exemplo: após salvar uma despesa:
-// atualizarRelatoriosComDadosReais();
 }
